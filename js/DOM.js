@@ -4,10 +4,9 @@ $(document).on('ready',function(){
   var game = new Game();
   var player = new Player(game.width,game.height);
   game.addBody(player);
-  game.addBody(new Food(game.width,game.height));
+  var foodInterval = window.setInterval(function(){game.addBody(new Food(game.width,game.height));},1000);
   game.drawCanvas();
-  // var foodInterval = setInterval(game.addBody(new Food(game.width,game.height)),1000);
-  $('canvas').on('mousemove',function(e){
+  $('body').on('mousemove',function(e){
     player.setCursorLocation(e);
   });
 });
@@ -52,13 +51,13 @@ Game.prototype.allCollisions = function(){
         // if there is a collision remove the smaller body
         if(body[j].radius>body[k].radius){
           body.splice(k,1);
+          k--;
         } else {
           body.splice(j,1);
+          j--;
         }
         //update variables to ensure we aren't skipping any bodies
         numBodies = body.length;
-        j--;
-        k--;
       }
     }
   }
