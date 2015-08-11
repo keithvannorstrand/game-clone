@@ -50,9 +50,15 @@ Game.prototype.allCollisions = function(){
       if(this.collision(body[j],body[k])){
         // if there is a collision remove the smaller body
         if(body[j].radius>body[k].radius){
+          if(body[j] instanceof Player){
+            body[j].grow(body[k]);
+          }
           body.splice(k,1);
           k--;
         } else {
+          if(body[k] instanceof Player){
+            body[k].grow(body[j]);
+          }
           body.splice(j,1);
           j--;
         }

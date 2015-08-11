@@ -36,3 +36,13 @@ Player.prototype.update = function(context){
   this.move();
   circle(this,context);
 };
+
+Player.prototype.grow = function(body){
+  var myArea = this.radius*this.radius*3.14;
+  var bodyRadius = body.radius*body.radius*3.14;
+  myArea+=bodyRadius;
+  this.radius = Math.sqrt(myArea/3.14);
+  this.speed = 100/this.radius;
+  console.log('radius',this.radius);
+  console.log('speed',this.speed);
+};
