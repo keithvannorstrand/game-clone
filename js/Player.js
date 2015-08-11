@@ -7,8 +7,7 @@ var Player = function(width,height) {
   this.cursorY = this.positionY;
   this.speed = 10;
   this.radius = 10;
-  // this.width = 10;
-  // this.height = 10;
+  this.color = 'red';
 };
 
 Player.prototype.move = function(){
@@ -43,6 +42,4 @@ Player.prototype.grow = function(body){
   myArea+=bodyRadius;
   this.radius = Math.sqrt(myArea/3.14);
   this.speed = 100/this.radius;
-  console.log('radius',this.radius);
-  console.log('speed',this.speed);
 };

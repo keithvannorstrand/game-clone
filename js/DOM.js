@@ -3,13 +3,16 @@
 $(document).on('ready',function(){
   var game = new Game();
   var player = new Player(game.width,game.height);
+  var enemy = new Enemy(game.width,game.height);
   game.addBody(player);
+  game.addBody(enemy);
   var foodInterval = window.setInterval(function(){game.addBody(new Food(game.width,game.height));},1000);
   game.drawCanvas();
   $('body').on('mousemove',function(e){
     player.setCursorLocation(e);
   });
 });
+
 
 var Game = function(){
   var canvas = document.getElementById('game');
@@ -50,13 +53,14 @@ Game.prototype.allCollisions = function(){
       if(this.collision(body[j],body[k])){
         // if there is a collision remove the smaller body
         if(body[j].radius>body[k].radius){
-          if(body[j] instanceof Player){
+          //if the winner is an enemy or player then make it grow
+          if(body[j] instanceof Player || body[j] instanceof Enemy){
             body[j].grow(body[k]);
           }
           body.splice(k,1);
           k--;
         } else {
-          if(body[k] instanceof Player){
+          if(body[k] instanceof Player || body[k] instanceof Enemy){
             body[k].grow(body[j]);
           }
           body.splice(j,1);
@@ -91,6 +95,12 @@ Game.prototype.collision = function(body1, body2){
 // creates the circle on the canvas for a given body
 function circle(body,context){
   context.beginPath();
+  context.fillStyle=body.color;
   context.arc(body.positionX,body.positionY,body.radius,0,6.28);
   context.fill();
+}
+
+var colors = ['red','blue','green','orange','purple','yellow'];
+function randomColor(){
+  return colors[Math.floor(Math.random()*colors.length)];
 }
