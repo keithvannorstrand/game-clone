@@ -16,6 +16,7 @@ Recreate a single player version of the game found on agar.io.
 * AI for enemy bodies
 
 ##Stretch
-* Networking several players together into the same game
+* Network several players together into the same game
 * Large canvas with window following player
 * Special abilities
+* Add multiple levels to single player mode

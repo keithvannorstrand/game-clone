@@ -3,10 +3,8 @@
 $(document).on('ready',function(){
   var game = new Game();
   var player = new Player(game.width,game.height);
-  var enemy = new Enemy(game.width,game.height);
   game.addBody(player);
-  game.addBody(enemy);
-  var foodInterval = window.setInterval(function(){game.addBody(new Food(game.width,game.height));},1000);
+  var foodInterval = window.setInterval(function(){game.addBody(new Food(game.width,game.height));},500);
   game.drawCanvas();
   $('body').on('mousemove',function(e){
     player.setCursorLocation(e);
@@ -21,14 +19,23 @@ var Game = function(){
   this.height = canvas.height = 700;
   this.context = context;
   this.bodies = [];
+  this.init();
 };
 
+Game.prototype.init = function(){
+  for(var i=0;i<4;i++){
+    this.addBody(new Enemy(this.width,this.height));
+  }
+  for(var j=0;j<15;j++){
+    this.addBody(new Food(this.width,this.height));
+  }
+};
 
 Game.prototype.addBody = function(body){
   this.bodies.push(body);
 };
 
-Game.prototype.drawCanvas= function(){
+Game.prototype.drawCanvas = function(){
   var self = this;
   function frame(){
     //clears the canvas to then be redrawn
@@ -64,7 +71,8 @@ Game.prototype.allCollisions = function(){
             body[k].grow(body[j]);
           }
           body.splice(j,1);
-          j--;
+          if(j!==0)
+            j--;
         }
         //update variables to ensure we aren't skipping any bodies
         numBodies = body.length;
@@ -92,6 +100,8 @@ Game.prototype.collision = function(body1, body2){
   return squareDistance <= (body1.radius+body2.radius)*(body1.radius+body2.radius);
 };
 
+
+// helper functions
 // creates the circle on the canvas for a given body
 function circle(body,context){
   context.beginPath();
