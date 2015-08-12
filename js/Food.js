@@ -1,6 +1,6 @@
 function Food(width,height){
-  this.positionX = Math.random()*width;
-  this.positionY = Math.random()*height;
+  this.position = {x: Math.random()*width,
+                   y: Math.random()*height};
   this.radius = Math.random()*2+4;
   this.color = 'black';
 }

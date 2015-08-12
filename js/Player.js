@@ -1,10 +1,10 @@
 var Player = function(width,height) {
-  this.positionX = width/2;
-  this.positionY = height/2;
-  this.velocityX = 0;
-  this.velocityY = 0;
-  this.cursorX = this.positionX;
-  this.cursorY = this.positionY;
+  this.position = {x: width/2, 
+                   y: height/2};
+  this.velocity = {x: 0,
+                   y: 0};
+  this.cursor = {x: this.position.x,
+                 y: this.position.y};
   this.speed = 10;
   this.radius = 10;
   this.color = 'red';
@@ -12,23 +12,23 @@ var Player = function(width,height) {
 
 Player.prototype.move = function(){
   // sides of a right triangle joining 
-  var dx = this.cursorX - this.positionX;
-  var dy = this.cursorY - this.positionY;
+  var dx = this.cursor.x - this.position.x;
+  var dy = this.cursor.y - this.position.y;
   var distance = Math.sqrt(dx*dx + dy*dy);
 
   //updates player position
   if(distance>5){
-    this.velocityX = (dx/distance)*this.speed;
-    this.velocityY = (dy/distance)*this.speed;
-    this.positionX+=this.velocityX;
-    this.positionY+=this.velocityY;
+    this.velocity.x = (dx/distance)*this.speed;
+    this.velocity.y = (dy/distance)*this.speed;
+    this.position.x+=this.velocity.x;
+    this.position.y+=this.velocity.y;
   }
 };
 
 // sets the position of the cursor
 Player.prototype.setCursorLocation = function(e){
-  this.cursorX = e.pageX;
-  this.cursorY = e.pageY;
+  this.cursor.x = e.pageX;
+  this.cursor.y = e.pageY;
 };
 
 Player.prototype.update = function(context){
