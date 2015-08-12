@@ -32,19 +32,29 @@ Enemy.prototype.move = function(food, actors){
 Enemy.prototype.findDirection = function(food, actors){
 
   var closestActor = this.findClosestBody(actors);
-  if(closestActor!==undefined && closestActor.radius*1.1<this.radius){
-    this.setDirection(closestActor);
-  } else {
-    var closestFood = this.findClosestBody(food);
-    if(closestFood!==undefined)
-      this.setDirection(closestFood);
+  var closestFood = this.findClosestBody(food);
+  var distToActor,distToFood;
+
+  // if there is no food or only 1 actor end function
+  if(closestActor!==undefined && closestFood!==undefined){
+    distToActor = this.distance(this.position,closestActor.position);
+    distToFood = this.distance(this.position,closestFood.position);
+
+    //only chase the closest actor if you are 30% larger AND
+    //the distance to the closest food is twice as far
+    if(closestActor.radius*1.3<this.radius && distToActor<distToFood*2){
+      this.setDirection(closestActor);
+    } else {
+      if(closestFood!==undefined)
+        this.setDirection(closestFood);
+    }
   }
 };
 
 //finds the closest body in the given array
 //returns that body
 Enemy.prototype.findClosestBody = function(bodyArray){
-  var closestDistance=1000000;
+  var closestDistance=Number.MAX_SAFE_INTEGER;
   var closestBody;
   for(var i=0;i<bodyArray.length;i++){
     if(this===bodyArray[i])
@@ -58,6 +68,13 @@ Enemy.prototype.findClosestBody = function(bodyArray){
   return closestBody;
 };
 
+Enemy.prototype.closerBody = function(body1,body2){
+  var sqDist1 = this.sqDistance(this.position,body1.position);
+  var sqDist2 = this.sqDistance(this.position,body2.position);
+  if(sqDist1>sqDist2)
+    return body1;
+  return body2;
+};
 //finds the true distance
 Enemy.prototype.distance = function(pointA,pointB){
   var sqDist = this.sqDistance(pointA,pointB);
@@ -75,7 +92,6 @@ Enemy.prototype.setDirection = function(body){
   this.direction.x = body.position.x;
   this.direction.y = body.position.y;
 };
-
 
 //redraws itself and moves towards its goal
 Enemy.prototype.update = function(context,food,actors){

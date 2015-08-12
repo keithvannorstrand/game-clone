@@ -81,7 +81,7 @@ Game.prototype.allCollisions = function(){
 
 };
 
-
+//checks if any actors are colliding with eachother
 Game.prototype.actorCollisions = function(){
   for(var i=0;i<this.actors.length-1;i++){
     for(var j=i+1;j<this.actors.length;j++){
@@ -103,9 +103,8 @@ Game.prototype.actorCollisions = function(){
   return false;
 };
 
+//checks if any actor is colliding food and makes the actor eat the food
 Game.prototype.foodCollisions = function(){
-  // var actor = this.actors;
-  // var food = this.food;
   for(var i=0;i<this.actors.length;i++){
     for(var j=0;j<this.food.length;j++){
       if(this.collision(this.actors[i],this.food[j])){
