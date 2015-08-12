@@ -4,7 +4,7 @@ $(document).on('ready',function(){
   var game = new Game();
   // var player = new Player(game.width,game.height);
   // game.addActor(player);
-  var foodInterval = window.setInterval(function(){game.addFood(new Food(game.width,game.height));},500);
+    var foodInterval = window.setInterval(function(){game.addFood(new Food(game.width,game.height));},500);
   game.drawCanvas();
   // $('body').on('mousemove',function(e){
   //   player.setCursorLocation(e);
@@ -24,10 +24,13 @@ var Game = function(){
 };
 
 Game.prototype.init = function(){
+
+  this.addActor(new Enemy(this.width,this.height,20));
+
   for(var i=0;i<4;i++){
     this.addActor(new Enemy(this.width,this.height));
   }
-  for(var j=0;j<15;j++){
+  for(var j=0;j<30;j++){
     this.addFood(new Food(this.width,this.height));
   }
 };
@@ -117,6 +120,37 @@ Game.prototype.foodCollisions = function(){
   return false;
 };
 
+
+
+// tests for collision between 2 circles
+Game.prototype.collision = function(body1, body2){
+  //this if statement 'should' never be triggered but it is there for a failsafe
+  if(body1===body2)
+    return false;
+  //finds distance between circles using pythagorian theorum
+  var distanceX = body1.position.x - body2.position.x;
+  var distanceY = body1.position.y - body2.position.y;
+  var squareDistance = distanceX*distanceX+distanceY*distanceY;
+  return squareDistance <= (body1.radius+body2.radius)*(body1.radius+body2.radius);
+};
+
+
+// helper functions
+// creates the circle on the canvas for a given body
+function circle(body,context){
+  context.beginPath();
+  context.fillStyle=body.color;
+  context.arc(body.position.x,body.position.y,body.radius,0,6.28);
+  context.fill();
+}
+
+var colors = ['blue','green','orange','purple','yellow','brown','cadetblue','cyan','gold','greenyellow','navy','slategray','springgreen'];
+function randomColor(){
+  return colors[Math.floor(Math.random()*colors.length)];
+}
+
+//---- OLD CODE ----
+
 // Game.prototype.allCollisions = function(){
 //   //reference variables
 //   var numActors = this.actors.length;
@@ -146,31 +180,3 @@ Game.prototype.foodCollisions = function(){
 //     }
 //   }
 // };
-
-
-// tests for collision between 2 circles
-Game.prototype.collision = function(body1, body2){
-  //this if statement 'should' never be triggered but it is there for a failsafe
-  if(body1===body2)
-    return false;
-  //finds distance between circles using pythagorian theorum
-  var distanceX = body1.position.x - body2.position.x;
-  var distanceY = body1.position.y - body2.position.y;
-  var squareDistance = distanceX*distanceX+distanceY*distanceY;
-  return squareDistance <= (body1.radius+body2.radius)*(body1.radius+body2.radius);
-};
-
-
-// helper functions
-// creates the circle on the canvas for a given body
-function circle(body,context){
-  context.beginPath();
-  context.fillStyle=body.color;
-  context.arc(body.position.x,body.position.y,body.radius,0,6.28);
-  context.fill();
-}
-
-var colors = ['blue','green','orange','purple','yellow'];
-function randomColor(){
-  return colors[Math.floor(Math.random()*colors.length)];
-}
