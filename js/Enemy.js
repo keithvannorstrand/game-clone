@@ -76,9 +76,9 @@ Enemy.prototype.fleeState = function(food, actors){
 Enemy.prototype.feedState = function(food, actors){
   // -----sense-----
   var orderFood = this.orderByDistance(food);
-
   // -----think-----
   var goalPoint = orderFood[0].position;
+  console.log(this.isDangerous(goalPoint, actors));
   if(!this.isDangerous(goalPoint, actors)){
     this.setDirectionToPoint(goalPoint);
   } else {
@@ -125,11 +125,10 @@ Enemy.prototype.findSafeRunPoint = function(actors){
 
 //checks if your goalPoint will cross any other actor's path
 Enemy.prototype.isDangerous = function(goalPoint, actors){
-  actors.forEach(function(actor){
-    if(!this.willIntersectWith(goalPoint,actor)){
+  for(var i=0; i<actors.length;i++){
+    if(!this.willIntersectWith(goalPoint,actors[i]))
       return false;
-    }
-  },this);
+  }
 };
 
 //returns true if your goalPoint will interesect with the other body
