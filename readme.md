@@ -20,3 +20,6 @@ Recreate a single player version of the game found on agar.io.
 * Large canvas with window following player
 * Special abilities
 * Add multiple levels to single player mode
+* AI specific stretch goals
+	* In fleeing state find a path that puts another body between you and the enemy
+	* 

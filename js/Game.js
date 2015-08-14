@@ -1,17 +1,4 @@
 
-
-$(document).on('ready',function(){
-  var game = new Game();
-  // var player = new Player(game.width,game.height);
-  // game.addActor(player);
-    var foodInterval = window.setInterval(function(){game.addFood(new Food(game.width,game.height));},500);
-  game.drawCanvas();
-  // $('body').on('mousemove',function(e){
-  //   player.setCursorLocation(e);
-  // });
-});
-
-
 var Game = function(){
   var canvas = document.getElementById('game');
   // var context = canvas.getContext('2d');
@@ -27,7 +14,7 @@ Game.prototype.init = function(){
 
   this.addActor(new Enemy(this.width,this.height,20));
 
-  for(var i=0;i<4;i++){
+  for(var i=0;i<1;i++){
     this.addActor(new Enemy(this.width,this.height));
   }
   for(var j=0;j<30;j++){
@@ -134,21 +121,11 @@ Game.prototype.collision = function(body1, body2){
 };
 
 
-// helper functions
-// creates the circle on the canvas for a given body
-function circle(body,context){
-  context.beginPath();
-  context.fillStyle=body.color;
-  context.arc(body.position.x,body.position.y,body.radius,0,6.28);
-  context.fill();
-}
 
-var colors = ['blue','green','orange','purple','yellow','brown','cadetblue','cyan','gold','greenyellow','navy','slategray','springgreen'];
-function randomColor(){
-  return colors[Math.floor(Math.random()*colors.length)];
-}
 
-//---- OLD CODE ----
+        /////////////////
+        // Iteration 1 //
+        /////////////////
 
 // Game.prototype.allCollisions = function(){
 //   //reference variables

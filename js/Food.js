@@ -8,3 +8,5 @@ function Food(width,height){
 Food.prototype.update = function(context){
   circle(this,context);
 };
+
+// module.exports = Food;
