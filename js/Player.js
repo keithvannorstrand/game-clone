@@ -1,5 +1,5 @@
 var Player = function(width,height) {
-  this.position = {x: width/2, 
+  this.position = {x: width/2,
                    y: height/2};
   this.velocity = {x: 0,
                    y: 0};
@@ -11,7 +11,7 @@ var Player = function(width,height) {
 };
 
 Player.prototype.move = function(){
-  // sides of a right triangle joining 
+  // sides of a right triangle joining
   var dx = this.cursor.x - this.position.x;
   var dy = this.cursor.y - this.position.y;
   var distance = Math.sqrt(dx*dx + dy*dy);
@@ -22,6 +22,7 @@ Player.prototype.move = function(){
     this.velocity.y = (dy/distance)*this.speed;
     this.position.x+=this.velocity.x;
     this.position.y+=this.velocity.y;
+    console.log('x: '+this.position.x+', y: '+this.position.y);
   }
 };
 

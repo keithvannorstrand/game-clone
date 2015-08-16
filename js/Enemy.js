@@ -5,18 +5,18 @@ var Enemy = function(width,height,radius,color) {
                    y: Math.random()*height};
   this.velocity = {x: 0,
                    y: 0};
-  this.direction = {x: this.position.x+10,
+  this.goalPoint = {x: this.position.x+10,
                     y: this.position.y-10};
-  this.speed = 10;
   this.radius = radius;
+  this.speed = 100/this.radius;
   if(color===undefined)
     this.color = randomColor();
 };
 
 //redraws itself and moves towards its goal
-Enemy.prototype.update = function(context,food,actors){
+Enemy.prototype.update = function(context, food, actors){
   circle(this,context);
-  this.move(food,actors);
+  this.move(context, food, actors);
 };
 
 // grows the body and slows speed
@@ -37,7 +37,7 @@ Enemy.prototype.grow = function(body){
           ///////////
 
 // determines and sets the state of the AI
-Enemy.prototype.determineState = function(food,actors){
+Enemy.prototype.determineState = function(context, food, actors){
 
   // sense
   var orderActorsRadius = this.orderByRadius(actors);
@@ -48,64 +48,52 @@ Enemy.prototype.determineState = function(food,actors){
     this.largestState(food,actors);
   } else if (this.distance(orderActorsDistance[1].position,this.position)<300
              && orderActorsDistance[1].radius>this.radius){
-    this.fleeState(food,actors);
+    this.fleeState(context, food, actors);
   } else {
-    this.feedState(food,actors);
+    this.feedState(food, actors);
   }
 };
 
         ///////////
         // Think //
         ///////////
+
 Enemy.prototype.largestState = function(food, actors){
   var closestActor = this.findClosestBody(actors);
-  this.setDirectionToBody(closestActor);
+  this.setGoalPointToBody(closestActor);
 };
 
-Enemy.prototype.fleeState = function(food, actors){
+Enemy.prototype.fleeState = function(context, food, actors){
   var closestActor = this.findClosestBody(actors);
   var distance = this.distance(this.position,closestActor.position);
-  if(250<distance && distance<300 ||
-    //  150<distance && distance<200 ||
-     50 <distance && distance<100){
-    var runPoint = this.findSafeRunPoint(actors);
-    this.setDirectionToPoint(runPoint);
-  }
+  var runPoint = this.findSafeRunPoint(context, actors);
+  this.setGoalPointToPoint(runPoint);
 };
 
-Enemy.prototype.feedState = function(food, actors){
-  // -----sense-----
-  var orderFood = this.orderByDistance(food);
-  // -----think-----
-  var goalPoint = orderFood[0].position;
-  console.log(this.isDangerous(goalPoint, actors));
-  if(!this.isDangerous(goalPoint, actors)){
-    this.setDirectionToPoint(goalPoint);
-  } else {
-    var runPoint = this.findSafeRunPoint(actors);
-    this.setDirectionToPoint(runPoint);
-  }
-
+Enemy.prototype.feedState = function(food){
+  var closestFood = this.findClosestBody(food);
+  this.setGoalPointToBody(closestFood);
 };
 
         /////////
         // Act //
         /////////
 
-Enemy.prototype.move = function (food, actors){
+Enemy.prototype.move = function (context, food, actors){
 
   //determines the state this should be in
-  this.determineState(food, actors);
+  this.determineState(context, food, actors);
 
-  var dx = this.direction.x - this.position.x;
-  var dy = this.direction.y - this.position.y;
+  var dx = this.goalPoint.x - this.position.x;
+  var dy = this.goalPoint.y - this.position.y;
   var distance = Math.sqrt(dx*dx + dy*dy);
 
-  // moves towards the direction point
+  // moves towards the goalPoint
   this.velocity.x = (dx/distance)*this.speed;
   this.velocity.y = (dy/distance)*this.speed;
-  this.position.x+=this.velocity.x;
-  this.position.y+=this.velocity.y;
+
+  this.position.x += this.velocity.x;
+  this.position.y += this.velocity.y;
 };
 
         //////////////////////
@@ -113,31 +101,84 @@ Enemy.prototype.move = function (food, actors){
         //////////////////////
 
 
-
-Enemy.prototype.findSafeRunPoint = function(actors){
-  runPoints = shuffle(runPoints);
-  for (var i=0;i<runPoints.length;i++){
-    if(!this.isDangerous(runPoints[i],actors)){
-      return runPoints[i];
+Enemy.prototype.findSafeRunPoint = function(context, actors){
+  var furthestRunPoint = this.findPoint(1,1);
+  var longestTime = 0;
+  // a for loop determines angle we are testing
+  for (var a=1;a<=8;a++){
+    //alpha is an angle in radians
+    var alpha = (2*Math.PI)/a;
+    console.log(a, alpha);
+    // t = time
+    for (var t=1; t<=20; t++){
+      console.log(t);
+      if(this.isDangerous(alpha, t, actors)){
+        break;
+      } else {
+        if(t > longestTime){
+          longestTime = t;
+          furthestRunPoint = this.findPoint(alpha, t);
+        }
+      }
+      if(t===20){
+        return this.findPoint(alpha, t);
+      }
     }
   }
+  return furthestRunPoint;
 };
 
-//checks if your goalPoint will cross any other actor's path
-Enemy.prototype.isDangerous = function(goalPoint, actors){
-  for(var i=0; i<actors.length;i++){
-    if(!this.willIntersectWith(goalPoint,actors[i]))
-      return false;
+  //finds a point based on a direction angle and a given time
+
+Enemy.prototype.findPoint = function(alpha, time){
+  // console.log('alpha', alpha);
+  // console.log('cos', Math.cos(alpha));
+  var myVelocity = {x: this.speed*time*Math.cos(alpha),
+                    y: this.speed*time*Math.sin(alpha)};
+  // console.log('velocity', myVelocity);
+  return {x: this.position.x + myVelocity.x*time,
+          y: this.position.y + myVelocity.y*time};
+};
+
+
+// returns true if the direction is dangerous
+// returns false if it is safe
+Enemy.prototype.isDangerous = function(alpha, time, actors, dangerRadius){
+  if(dangerRadius===undefined){
+    dangerRadius = 50;
   }
-};
+  var myProjectedPosition = this.findPoint(alpha, time);
+  // if I would be moving off the map consider it dangerous
+  if(0 > myProjectedPosition.x ||
+    myProjectedPosition.x > 1200 ||
+    0 > myProjectedPosition.y ||
+    myProjectedPosition.y > 700){
+    return true;
+  }
+  //find their position at time and see if its is 'dangerously' close
+  for (var i=0; i<actors.length; i++){
+    if(actors[i]===this){
+      continue;
+    }
+    var projectedActorPosition = {x: actors[i].position.x + actors[i].velocity.x*time,
+                                  y: actors[i].position.y + actors[i].velocity.y*time};
+    if(this.distance(myProjectedPosition,projectedActorPosition)<dangerRadius){
+      return true;
+    }
+  }
+  return false;
+}
 
-//returns true if your goalPoint will interesect with the other body
-Enemy.prototype.willIntersectWith = function(goalPoint, body){
-  var denomP1 = (body.position.y-body.direction.y)*(this.position.x-goalPoint.x);
-  var denomP2 = (body.position.x-body.direction.x)*(this.position.y-goalPoint.y);
-  var denom = denomP1 - denomP2;
-  return denom!==0;
-};
+// is this directions dangerous?
+
+// initial positions of me and enemy and velocity of me and enemy and take the dot product
+// then divide it by the square of the distance between the 2 velocities
+
+// change to willInterfereWith
+// create a loop that increases "time"
+// check if the point i get to at that 'time' is dangerously close to another enemy at that time
+
+
 
 //returns an array of the radii of each other body in the array
 Enemy.prototype.radiusOfOtherBodies = function(bodyArray){
@@ -180,10 +221,10 @@ Enemy.prototype.findClosestBody = function(bodyArray){
   for(var i=0;i<bodyArray.length;i++){
     if(this===bodyArray[i])
       continue;
-    var sqDistance = this.sqDistance(this.position,bodyArray[i].position);
-    if(sqDistance<closestDistance){
+    var distance = this.distance(this.position,bodyArray[i].position);
+    if(distance<closestDistance){
       closestBody = bodyArray[i];
-      closestDistance = sqDistance;
+      closestDistance = distance;
     }
   }
   return closestBody;
@@ -212,23 +253,52 @@ Enemy.prototype.sqDistance = function(pointA,pointB){
 };
 
 // sets this.direction to another bodies position
-Enemy.prototype.setDirectionToBody = function(body){
-  this.setDirectionToPoint(body.position);
+Enemy.prototype.setGoalPointToBody = function(body){
+  this.setGoalPointToPoint(body.position);
 };
 
 //sets this.direction based on the given point
-Enemy.prototype.setDirectionToPoint = function(point){
-  this.direction.x = point.x;
-  this.direction.y = point.y;
+Enemy.prototype.setGoalPointToPoint = function(point){
+  this.goalPoint.x = point.x;
+  this.goalPoint.y = point.y;
 };
 
 // module.exports = Enemy;
 
 
+    ///////////////////
+    // Iteration 2.5 //
+    ///////////////////
 
-/////////////////
-// Iteration 2 //
-/////////////////
+//checks if your goalPoint will cross any other actor's path
+// Enemy.prototype.isDangerous = function(goalPoint, actors){
+//   for(var i=0; i<actors.length;i++){
+//     if(!this.willIntersectWith(goalPoint,actors[i]))
+//       return false;
+//   }
+// };
+
+//find safe direction
+// Enemy.prototype.findSafeRunPoint = function(actors){
+//   runPoints = shuffle(runPoints);
+//   for (var i=0;i<runPoints.length;i++){
+//     if(!this.isDangerous(runPoints[i],actors)){
+//       return runPoints[i];
+//     }
+//   }
+// };
+
+//returns true if your goalPoint will interesect with the other body
+// Enemy.prototype.willIntersectWith = function(goalPoint, body){
+//   var denomP1 = (body.position.y-body.goalPoint.y)*(this.position.x-goalPoint.x);
+//   var denomP2 = (body.position.x-body.goalPoint.x)*(this.position.y-goalPoint.y);
+//   var denom = denomP1 - denomP2;
+//   return denom!==0;
+// };
+
+            /////////////////
+            // Iteration 2 //
+            /////////////////
 
 // Enemy.prototype.move = function(food, actors){
 //   // sides of a right triangle joining 2 points
