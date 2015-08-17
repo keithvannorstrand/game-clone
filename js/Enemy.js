@@ -42,11 +42,12 @@ Enemy.prototype.determineState = function(context, food, actors){
   // sense
   var orderActorsRadius = this.orderByRadius(actors);
   var orderActorsDistance = this.orderByDistance(actors);
+
   // think
   // if I am the largest actor then set state to largestState
   if(isEqual(orderActorsRadius[orderActorsRadius.length-1],this)){
     this.largestState(food,actors);
-  } else if (this.distance(orderActorsDistance[1].position,this.position)<300
+  } else if (this.distance(orderActorsDistance[1].position,this.position)<200
              && orderActorsDistance[1].radius>this.radius){
     this.fleeState(context, food, actors);
   } else {
@@ -58,18 +59,24 @@ Enemy.prototype.determineState = function(context, food, actors){
         // Think //
         ///////////
 
+// sets the enemy's state to attack the closest body
 Enemy.prototype.largestState = function(food, actors){
   var closestActor = this.findClosestBody(actors);
   this.setGoalPointToBody(closestActor);
 };
 
+// sets the Enemy's state to run from the 'attacking' body
+// currently VERY unstable
 Enemy.prototype.fleeState = function(context, food, actors){
   var closestActor = this.findClosestBody(actors);
   var distance = this.distance(this.position,closestActor.position);
   var runPoint = this.findSafeRunPoint(context, actors);
-  this.setGoalPointToPoint(runPoint);
+  // if(this.distance(runPoint,this.goalPoint)>10){
+    this.setGoalPointToPoint(runPoint);
+  // }
 };
 
+// sets the Enemy's state to find food and eat it to grow
 Enemy.prototype.feedState = function(food){
   var closestFood = this.findClosestBody(food);
   this.setGoalPointToBody(closestFood);
@@ -101,17 +108,17 @@ Enemy.prototype.move = function (context, food, actors){
         //////////////////////
 
 
-Enemy.prototype.findSafeRunPoint = function(context, actors){
+Enemy.prototype.findSafeRunPoint = function(context, actors, numAngles){
   var furthestRunPoint = this.findPoint(1,1);
   var longestTime = 0;
+  if(numAngles === undefined)
+    numAngles = 8;
   // a for loop determines angle we are testing
-  for (var a=1;a<=8;a++){
+  for (var a=numAngles;a>=1;a--){
     //alpha is an angle in radians
-    var alpha = (2*Math.PI)/a;
-    console.log(a, alpha);
+    var alpha = ((2*Math.PI)/numAngles)*a;
     // t = time
     for (var t=1; t<=20; t++){
-      console.log(t);
       if(this.isDangerous(alpha, t, actors)){
         break;
       } else {
@@ -125,6 +132,13 @@ Enemy.prototype.findSafeRunPoint = function(context, actors){
       }
     }
   }
+  // if(isEqual(furthestRunPoint,this.findPoint(2*Math.PI,1))){
+  if(furthestRunPoint.x<0 ||
+     furthestRunPoint.y<0 ||
+     furthestRunPoint.x > 1200 ||
+     furthestRunPoint.y > 700){
+       return {x:350,y:350};
+     }
   return furthestRunPoint;
 };
 
@@ -137,7 +151,10 @@ Enemy.prototype.findPoint = function(alpha, time){
                     y: this.speed*time*Math.sin(alpha)};
   // console.log('velocity', myVelocity);
   return {x: this.position.x + myVelocity.x*time,
-          y: this.position.y + myVelocity.y*time};
+          y: this.position.y + myVelocity.y*time,
+          // alpha: alpha,
+          // time: time
+        };
 };
 
 
@@ -145,14 +162,15 @@ Enemy.prototype.findPoint = function(alpha, time){
 // returns false if it is safe
 Enemy.prototype.isDangerous = function(alpha, time, actors, dangerRadius){
   if(dangerRadius===undefined){
-    dangerRadius = 50;
+    dangerRadius = 100;
   }
   var myProjectedPosition = this.findPoint(alpha, time);
   // if I would be moving off the map consider it dangerous
-  if(0 > myProjectedPosition.x ||
-    myProjectedPosition.x > 1200 ||
-    0 > myProjectedPosition.y ||
-    myProjectedPosition.y > 700){
+  if(
+      0 > myProjectedPosition.x ||
+      myProjectedPosition.x > 1200 ||
+      0 > myProjectedPosition.y ||
+      myProjectedPosition.y > 700){
     return true;
   }
   //find their position at time and see if its is 'dangerously' close
@@ -168,17 +186,6 @@ Enemy.prototype.isDangerous = function(alpha, time, actors, dangerRadius){
   }
   return false;
 }
-
-// is this directions dangerous?
-
-// initial positions of me and enemy and velocity of me and enemy and take the dot product
-// then divide it by the square of the distance between the 2 velocities
-
-// change to willInterfereWith
-// create a loop that increases "time"
-// check if the point i get to at that 'time' is dangerously close to another enemy at that time
-
-
 
 //returns an array of the radii of each other body in the array
 Enemy.prototype.radiusOfOtherBodies = function(bodyArray){

@@ -22,7 +22,7 @@ Player.prototype.move = function(){
     this.velocity.y = (dy/distance)*this.speed;
     this.position.x+=this.velocity.x;
     this.position.y+=this.velocity.y;
-    console.log('x: '+this.position.x+', y: '+this.position.y);
+    // console.log('x: '+this.position.x+', y: '+this.position.y);
   }
 };
 

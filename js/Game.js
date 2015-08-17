@@ -1,25 +1,28 @@
 
 var Game = function(){
   var canvas = document.getElementById('game');
-  // var context = canvas.getContext('2d');
   this.width = canvas.width = 1200;
   this.height = canvas.height = 700;
   this.context = canvas.getContext('2d');
   this.actors = [];
   this.food = [];
+  this.animationFrame;
+  this.foodInterval;
+  this.paused = false;
   this.init();
 };
 
 Game.prototype.init = function(){
-
-  this.addActor(new Enemy(this.width,this.height,20));
-
+  // initializes the game
+  // this.addActor(new Enemy(this.width,this.height,20));
   for(var i=0;i<1;i++){
     this.addActor(new Enemy(this.width,this.height));
   }
   for(var j=0;j<30;j++){
     this.addFood(new Food(this.width,this.height));
   }
+  var self = this;
+  this.foodInterval = window.setInterval(function(){self.addFood(new Food(self.width,self.height));},500);
 };
 
 Game.prototype.addActor = function(body){
@@ -42,10 +45,26 @@ Game.prototype.drawCanvas = function(){
     self.updateAll();
     //tests for collisions across the canvas
     self.allCollisions();
-    requestAnimationFrame(frame);
+    self.animationFrame = requestAnimationFrame(frame);
   }
   frame();
 };
+
+// pause and unpause
+Game.prototype.pause = function(){
+  if(this.paused){
+    // if the game is paused restart food interval and animationFrame
+    var self = this;
+    this.drawCanvas();
+    this.foodInterval = window.setInterval(function(){self.addFood(new Food(self.width,self.height));},500);
+    this.paused = false;
+  } else {
+    // to pause cancel animationFrame and remove the foodInterval
+    window.cancelAnimationFrame(this.animationFrame);
+    clearInterval(this.foodInterval);
+    this.paused = true;
+  }
+}
 
 // calls update function on all
 Game.prototype.updateAll = function(){
@@ -75,11 +94,11 @@ Game.prototype.actorCollisions = function(){
       if(this.collision(this.actors[i],this.actors[j])){
         // test if one of the actors' radius is 10% larger
         // then make the larger actor grow and remove the smaller
-        if(this.actors[i].radius > this.actors[j].radius*1.10){
+        if(this.actors[i].radius > this.actors[j].radius){
           this.actors[i].grow(this.actors[j]);
           this.actors.splice(j,1);
           return true;
-        } else if(this.actors[j].radius > this.actors[i].radius*1.10){
+        } else if(this.actors[j].radius > this.actors[i].radius){
           this.actors[j].grow(this.actors[i]);
           this.actors.splice(i,1);
           return true;

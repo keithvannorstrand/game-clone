@@ -1,10 +1,17 @@
 $(document).on('ready',function(){
   var game = new Game();
-  // var player = new Player(game.width,game.height);
-  // game.addActor(player);
-    var foodInterval = window.setInterval(function(){game.addFood(new Food(game.width,game.height));},500);
+  var player = new Player(game.width,game.height);
+  game.addActor(player);
   game.drawCanvas();
-  // $('body').on('mousemove',function(e){
-  //   player.setCursorLocation(e);
-  // });
+  $('canvas').on('mousemove',function(e){
+    player.setCursorLocation(e);
+  });
+
+  $(document).on('keypress',function(e){
+    e.preventDefault();
+    if(e.keyCode===32){
+      console.log('space');
+      game.pause();
+    }
+  });
 });
