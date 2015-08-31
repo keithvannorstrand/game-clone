@@ -8,15 +8,15 @@ function circle(body,context){
 }
 
 //shuffle function for shuffling runPoints
-function shuffle(array){
-  var temp = array.slice();
-  var shuffled=[];
-  while(temp.length>0) {
-    var index = Math.floor(Math.random()*temp.length);
-    shuffled.push(temp.splice(index,1)[0]);
-  }
-  return shuffled;
-}
+// function shuffle(array){
+//   var temp = array.slice();
+//   var shuffled=[];
+//   while(temp.length>0) {
+//     var index = Math.floor(Math.random()*temp.length);
+//     shuffled.push(temp.splice(index,1)[0]);
+//   }
+//   return shuffled;
+// }
 
 var colors = ['blue','green','orange','purple','yellow','brown','cadetblue','cyan','gold','greenyellow','navy','slategray','springgreen'];
 
@@ -36,14 +36,3 @@ var isEqual = function(body,body2){
   }
   return true;
 };
-
-// creates an array of points in the canvas
-function genRunPoints(){
-  var pointsArray = [];
-  for(var xCoord=0;xCoord<1200;xCoord+=100)
-    for(var yCoord=0;yCoord<700;yCoord+=100)
-      pointsArray.push({x:xCoord, y:yCoord});
-  return pointsArray;
-}
-
-var runPoints = genRunPoints();

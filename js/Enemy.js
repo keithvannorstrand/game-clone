@@ -11,11 +11,12 @@ var Enemy = function(width,height,radius,color) {
   this.speed = 100/this.radius;
   if(color===undefined)
     this.color = randomColor();
+  // this.stateInterval = window.setInterval(this.determineState())
 };
 
-//redraws itself and moves towards its goal
+// redraws itself and moves towards its goal
 Enemy.prototype.update = function(context, food, actors){
-  circle(this,context);
+  circle(this, context);
   this.move(context, food, actors);
 };
 
@@ -40,6 +41,7 @@ Enemy.prototype.grow = function(body){
 Enemy.prototype.determineState = function(context, food, actors){
 
   // sense
+
   var orderActorsRadius = this.orderByRadius(actors);
   var orderActorsDistance = this.orderByDistance(actors);
 
@@ -86,6 +88,7 @@ Enemy.prototype.feedState = function(food){
         // Act //
         /////////
 
+
 Enemy.prototype.move = function (context, food, actors){
 
   //determines the state this should be in
@@ -118,7 +121,7 @@ Enemy.prototype.findSafeRunPoint = function(context, actors, numAngles){
     //alpha is an angle in radians
     var alpha = ((2*Math.PI)/numAngles)*a;
     // t = time
-    for (var t=1; t<=20; t++){
+    for (var t=1; t<=5; t++){
       if(this.isDangerous(alpha, t, actors)){
         break;
       } else {
@@ -127,7 +130,7 @@ Enemy.prototype.findSafeRunPoint = function(context, actors, numAngles){
           furthestRunPoint = this.findPoint(alpha, t);
         }
       }
-      if(t===20){
+      if(t===5){
         return this.findPoint(alpha, t);
       }
     }
@@ -145,11 +148,8 @@ Enemy.prototype.findSafeRunPoint = function(context, actors, numAngles){
   //finds a point based on a direction angle and a given time
 
 Enemy.prototype.findPoint = function(alpha, time){
-  // console.log('alpha', alpha);
-  // console.log('cos', Math.cos(alpha));
   var myVelocity = {x: this.speed*time*Math.cos(alpha),
                     y: this.speed*time*Math.sin(alpha)};
-  // console.log('velocity', myVelocity);
   return {x: this.position.x + myVelocity.x*time,
           y: this.position.y + myVelocity.y*time,
           // alpha: alpha,
@@ -204,7 +204,7 @@ Enemy.prototype.orderByDistance = function(bodyArray){
   var arrayCopy = bodyArray.slice();
   var sortedArray = [];
   var self = this;
-  sortedArray = bodyArray.sort(function(a,b){
+  sortedArray = arrayCopy.sort(function(a,b){
     return self.sqDistance(self.position,a.position)-self.sqDistance(self.position,b.position);
   });
   return sortedArray;

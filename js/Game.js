@@ -8,6 +8,7 @@ var Game = function(){
   this.food = [];
   this.animationFrame;
   this.foodInterval;
+  this.frameInterval;
   this.paused = false;
   this.init();
 };
@@ -15,18 +16,21 @@ var Game = function(){
 Game.prototype.init = function(){
   // initializes the game
   // this.addActor(new Enemy(this.width,this.height,20));
-  for(var i=0;i<1;i++){
+  for(var i=0;i<6;i++){
     this.addActor(new Enemy(this.width,this.height));
   }
+
   for(var j=0;j<30;j++){
     this.addFood(new Food(this.width,this.height));
   }
+
   var self = this;
   this.foodInterval = window.setInterval(function(){self.addFood(new Food(self.width,self.height));},500);
 };
 
 Game.prototype.addActor = function(body){
   this.actors.push(body);
+  // var moveInterval = window.setInterval(this.move)
 };
 
 
@@ -34,9 +38,11 @@ Game.prototype.addFood = function(food){
   this.food.push(food);
 };
 
+
 Game.prototype.drawCanvas = function(){
   var self = this;
   function frame(){
+    // self.checkWinner();
     //clears the canvas to then be redrawn
     self.context.clearRect(0, 0, self.width, self.height);
     //creates border
@@ -46,9 +52,22 @@ Game.prototype.drawCanvas = function(){
     //tests for collisions across the canvas
     self.allCollisions();
     self.animationFrame = requestAnimationFrame(frame);
+    // self.frameInterval = window.setInterval(frame, 1000);
   }
   frame();
 };
+
+// Game.prototype.checkWinner = function(){
+//   if(this.actors.length===1){
+//     this.endLevel();
+//     // display
+//   }
+// }
+//
+// Game.prototype.endLevel = function(){
+//   window.cancelAnimationFrame(this.animationFrame);
+// }
+
 
 // pause and unpause
 Game.prototype.pause = function(){
@@ -69,9 +88,9 @@ Game.prototype.pause = function(){
 // calls update function on all
 Game.prototype.updateAll = function(){
   // call each actor's update function
-  this.actors.forEach(function(actor){
-    actor.update(this.context,this.food,this.actors);
-  },this);
+  for(var i=0; i<this.actors.length; i++){
+    this.actors[i].update(this.context, this.food, this.actors);
+  }
   //call each food's update function
   this.food.forEach(function(food){
     food.update(this.context);
