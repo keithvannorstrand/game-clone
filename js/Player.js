@@ -8,6 +8,11 @@ var Player = function(width,height) {
   this.speed = 10;
   this.radius = 10;
   this.color = 'red';
+  var self = this;
+  window.onmousemove = function(e){
+    self.cursor.x = e.pageX;
+    self.cursor.y = e.pageY;
+  };
 };
 
 Player.prototype.move = function(){
@@ -22,14 +27,7 @@ Player.prototype.move = function(){
     this.velocity.y = (dy/distance)*this.speed;
     this.position.x+=this.velocity.x;
     this.position.y+=this.velocity.y;
-    // console.log('x: '+this.position.x+', y: '+this.position.y);
   }
-};
-
-// sets the position of the cursor
-Player.prototype.setCursorLocation = function(e){
-  this.cursor.x = e.pageX;
-  this.cursor.y = e.pageY;
 };
 
 Player.prototype.update = function(context){

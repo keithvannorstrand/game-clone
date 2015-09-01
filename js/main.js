@@ -1,12 +1,14 @@
 $(document).on('ready',function(){
   var game = new Game();
-  // var player = new Player(game.width,game.height);
-  // game.addActor(player);
-  game.drawCanvas();
+  
+  game.startLevel();
 
-  // $('canvas').on('mousemove',function(e){
-  //   player.setCursorLocation(e);
-  // });
+
+
+  $('#nextLevel').on('click', function(e){
+    console.log('click');
+    game.startLevel();
+  });
 
   $(document).on('keypress',function(e){
     e.preventDefault();

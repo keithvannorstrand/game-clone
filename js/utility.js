@@ -4,6 +4,7 @@ function circle(body,context){
   context.beginPath();
   context.fillStyle=body.color;
   context.arc(body.position.x,body.position.y,body.radius,0,6.28);
+  context.stroke();
   context.fill();
 }
 
@@ -35,4 +36,16 @@ var isEqual = function(body,body2){
       return false;
   }
   return true;
+};
+
+var showModal = function(message, won){
+  if(won){
+    $('#myModal').modal();
+    $('.modal-title').text(message);
+    $('#nextLevel').text('Next Level');
+  } else {
+    $('#myModal').modal();
+    $('.modal-title').text(message);
+    $('#nextLevel').text('Play Again?');
+  }
 };

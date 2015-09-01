@@ -23,4 +23,3 @@ Recreate a single player version of the game found on agar.io.
 * AI specific stretch goals
 	* In fleeing state find a path that puts another body between you and the enemy
 	* Add an attack state
-	* 

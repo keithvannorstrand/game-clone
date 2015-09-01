@@ -1,6 +1,6 @@
 var Enemy = function(width,height,radius,color) {
   if(radius===undefined)
-    radius = 10;
+    radius = 8;
   this.position = {x: Math.random()*width,
                    y: Math.random()*height};
   this.velocity = {x: 0,
@@ -39,7 +39,8 @@ Enemy.prototype.grow = function(body){
 
 // determines and sets the state of the AI
 Enemy.prototype.determineState = function(context, food, actors){
-
+  if(actors.length===1)
+    return;
   // sense
 
   var orderActorsRadius = this.orderByRadius(actors);
