@@ -4,20 +4,8 @@ function circle(body,context){
   context.beginPath();
   context.fillStyle=body.color;
   context.arc(body.position.x,body.position.y,body.radius,0,6.28);
-  context.stroke();
   context.fill();
 }
-
-//shuffle function for shuffling runPoints
-// function shuffle(array){
-//   var temp = array.slice();
-//   var shuffled=[];
-//   while(temp.length>0) {
-//     var index = Math.floor(Math.random()*temp.length);
-//     shuffled.push(temp.splice(index,1)[0]);
-//   }
-//   return shuffled;
-// }
 
 var colors = ['blue','green','orange','purple','yellow','brown','cadetblue','cyan','gold','greenyellow','navy','slategray','springgreen'];
 

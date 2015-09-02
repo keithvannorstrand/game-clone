@@ -1,6 +1,8 @@
 var Enemy = function(width,height,radius,color) {
   if(radius===undefined)
     radius = 8;
+  this.max = {x: width,
+              y: height};
   this.position = {x: Math.random()*width,
                    y: Math.random()*height};
   this.velocity = {x: 0,
@@ -8,10 +10,9 @@ var Enemy = function(width,height,radius,color) {
   this.goalPoint = {x: this.position.x+10,
                     y: this.position.y-10};
   this.radius = radius;
-  this.speed = 100/this.radius;
+  this.speed = 200/(this.radius+20);
   if(color===undefined)
     this.color = randomColor();
-  // this.stateInterval = window.setInterval(this.determineState())
 };
 
 // redraws itself and moves towards its goal
@@ -26,7 +27,7 @@ Enemy.prototype.grow = function(body){
   var bodyRadius = body.radius*body.radius*3.14;
   myArea+=bodyRadius;
   this.radius = Math.sqrt(myArea/3.14);
-  this.speed = 100/this.radius;
+  this.speed = 200/(this.radius+20);
 };
 
         ///////////////////////
@@ -139,8 +140,8 @@ Enemy.prototype.findSafeRunPoint = function(context, actors, numAngles){
   // if(isEqual(furthestRunPoint,this.findPoint(2*Math.PI,1))){
   if(furthestRunPoint.x<0 ||
      furthestRunPoint.y<0 ||
-     furthestRunPoint.x > 1200 ||
-     furthestRunPoint.y > 700){
+     furthestRunPoint.x > this.max.x ||
+     furthestRunPoint.y > this.max.y){
        return {x:350,y:350};
      }
   return furthestRunPoint;
@@ -169,9 +170,9 @@ Enemy.prototype.isDangerous = function(alpha, time, actors, dangerRadius){
   // if I would be moving off the map consider it dangerous
   if(
       0 > myProjectedPosition.x ||
-      myProjectedPosition.x > 1200 ||
+      myProjectedPosition.x > this.max.x ||
       0 > myProjectedPosition.y ||
-      myProjectedPosition.y > 700){
+      myProjectedPosition.y > this.max.y){
     return true;
   }
   //find their position at time and see if its is 'dangerously' close

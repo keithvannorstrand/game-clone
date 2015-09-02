@@ -1,7 +1,7 @@
 var Game = function(){
   var canvas = document.getElementById('game');
-  this.width = canvas.width = 1200;
-  this.height = canvas.height = 700;
+  this.width = canvas.width = window.innerWidth-20;
+  this.height = canvas.height = window.innerHeight-20;
   this.context = canvas.getContext('2d');
   this.currentLevel = 1;
   this.actors = [];
