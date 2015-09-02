@@ -5,7 +5,7 @@ var Player = function(width,height) {
                    y: 0};
   this.cursor = {x: this.position.x,
                  y: this.position.y};
-  this.speed = 10;
+  this.speed = 7;
   this.radius = 10;
   this.color = 'red';
   var self = this;
@@ -40,5 +40,5 @@ Player.prototype.grow = function(body){
   var bodyRadius = body.radius*body.radius*3.14;
   myArea+=bodyRadius;
   this.radius = Math.sqrt(myArea/3.14);
-  this.speed = 100/this.radius;
+  this.speed = 200/(this.radius+20);
 };
